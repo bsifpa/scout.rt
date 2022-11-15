@@ -10,6 +10,7 @@
     "strictBindCallApply": true,
     "noImplicitOverride": true,
     "useDefineForClassFields": true,
+    "noEmit": true,
     // For jquery imports, see https://www.typescriptlang.org/tsconfig#allowSyntheticDefaultImports
     "allowSyntheticDefaultImports": true,
     "lib": [

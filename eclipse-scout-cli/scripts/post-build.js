@@ -15,15 +15,18 @@ const themeJsOutFilter = f => /.*theme.*\.js/.test(f);
 const listFiles = require('./list-files');
 
 function deleteFile(filename) {
-  fs.access(filename, fs.constants.W_OK, err => {
-    if (err) {
-      console.error(`${filename} does not exist or cannot be deleted.`);
-    } else {
-      fs.unlink(filename, unlinkErr => {
-        if (unlinkErr) {
-          throw unlinkErr;
-        }
-      });
+  if (!fs.existsSync(filename)) {
+    return;
+  }
+  try {
+    fs.accessSync(filename, fs.constants.W_OK);
+  } catch (err) {
+    console.error(`No right to delete ${filename}.`, err);
+    return;
+  }
+  fs.unlink(filename, unlinkErr => {
+    if (unlinkErr) {
+      throw unlinkErr;
     }
   });
 }
@@ -55,6 +58,5 @@ module.exports = {
     listFiles(dir)
       .filter(themeJsOutFilter)
       .forEach(f => deleteFile(f));
-
   }
 };

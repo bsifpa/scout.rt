@@ -14,21 +14,36 @@ module.exports = (env, args) => {
   args.resDirArray = ['res'];
   const config = baseConfig(env, args);
 
+  let cjsConfig = {
+    entry: {
+      'eclipse-scout-core.cjs': './src/index.ts'
+    },
+    // Clean is false because the second config will clean it
+    ...baseConfig.libraryConfig(config, {clean: false})
+  };
+
   // This build creates resources that can directly be included in a html file without needing a build stack (webpack, babel etc.).
   // The resources are available by a CDN that provides npm modules (e.g. https://www.jsdelivr.com/package/npm/@eclipse-scout/core)
-  config.entry = {
-    'eclipse-scout-core': './src/index.ts',
-    'eclipse-scout-core-theme': './src/index.less',
-    'eclipse-scout-core-theme-dark': './src/index-dark.less'
+  let globalConfig = {
+    ...config,
+    entry: {
+      'eclipse-scout-core': './src/index.ts',
+      'eclipse-scout-core-theme': './src/index.less',
+      'eclipse-scout-core-theme-dark': './src/index-dark.less'
+    },
+    optimization: {
+      ...config.optimization,
+      splitChunks: undefined // disable splitting
+    },
+    externals: {
+      ...config.externals,
+      // Dependencies should not be included in the resulting js file.
+      // The consumer has to include them by himself which gives him more control (maybe his site has already added jQuery or he wants to use another version)
+      // Left side is the import name, right side the name of the global variable added by the plugin (e.g. window.jQuery)
+      'jquery': 'jQuery',
+      'sourcemapped-stacktrace': 'sourceMappedStackTrace'
+    }
   };
-  Object.assign(config.externals, {
-    // Dependencies should not be included in the resulting js file.
-    // The consumer has to include them by himself which gives him more control (maybe his site has already added jQuery or he wants to use another version)
-    // Left side is the import name, right side the name of the global variable added by the plugin (e.g. window.jQuery)
-    'jquery': 'jQuery',
-    'sourcemapped-stacktrace': 'sourceMappedStackTrace'
-  });
-  config.optimization.splitChunks = undefined; // disable splitting
 
-  return config;
+  return [cjsConfig, globalConfig];
 };

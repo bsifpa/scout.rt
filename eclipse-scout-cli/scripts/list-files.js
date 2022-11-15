@@ -18,6 +18,9 @@ const _getAllFiles = dir => {
 
   return fs.readdirSync(dir).reduce((files, file) => {
     const name = path.join(dir, file);
+    if (!fs.existsSync(name)) {
+      return files;
+    }
     const isDirectory = fs.statSync(name).isDirectory();
     return isDirectory ? [...files, ..._getAllFiles(name)] : [...files, name];
   }, []);

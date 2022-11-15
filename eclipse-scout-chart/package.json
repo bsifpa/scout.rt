@@ -19,6 +19,10 @@
     "eclipse-scout",
     "chart"
   ],
+  "publishConfig": {
+    "main": "./dist/eclipse-scout-chart.cjs.js",
+    "types": "./src/index.ts"
+  },
   "main": "./src/index.ts",
   "files": [
     "dist",

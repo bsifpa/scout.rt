@@ -58,7 +58,6 @@ module.exports = (env, args) => {
   };
 
   const config = {
-    target: 'web',
     mode: buildMode,
     devtool: false, // disabled because SourceMapDevToolPlugin is used (see below)
     ignoreWarnings: [(webpackError, compilation) => isWarningIgnored(devMode, webpackError, compilation)],
@@ -153,7 +152,12 @@ module.exports = (env, args) => {
           loader: require.resolve('babel-loader'),
           options: babelOptions
         }, {
-          loader: require.resolve('ts-loader')
+          loader: require.resolve('ts-loader'),
+          options: {
+            compilerOptions: {
+              noEmit: false
+            }
+          }
         }]
       }, {
         test: /\.jsx?$/,
@@ -239,6 +243,47 @@ module.exports = (env, args) => {
 
   return config;
 };
+
+function libraryConfig(config, options = {}) {
+  const packageJson = require(path.resolve('./package.json'));
+  let dependencies = Object.keys(packageJson.dependencies).reduce((obj, current) => {
+    obj[current] = current;
+    return obj;
+  }, {});
+
+  let plugins = config.plugins;
+  if (options.clean ?? true) {
+    // FileList is not necessary in library mode
+    plugins = plugins.map(plugin => {
+      if (plugin instanceof AfterEmitWebpackPlugin) {
+        return new AfterEmitWebpackPlugin({outDir: plugin.options.outDir, createFileList: false});
+      }
+      return plugin;
+    });
+  } else {
+    // If clean is false, we don't need the plugin at all
+    plugins = plugins.filter(plugin => !(plugin instanceof AfterEmitWebpackPlugin));
+  }
+
+  return {
+    ...config,
+    optimization: {
+      ...config.optimization,
+      splitChunks: undefined // disable splitting
+    },
+    output: {
+      ...config.output,
+      library: {
+        type: 'commonjs2'
+      }
+    },
+    externals: {
+      ...config.externals,
+      ...dependencies
+    },
+    plugins
+  };
+}
 
 /**
  * @param {object} entry the webpack entry object
@@ -373,3 +418,4 @@ function prodDevtoolModuleFilenameTemplate(info) {
 }
 
 module.exports.addThemes = addThemes;
+module.exports.libraryConfig = libraryConfig;

@@ -20,6 +20,10 @@
     "scout core runtime"
   ],
   "main": "./src/index.ts",
+  "publishConfig": {
+    "main": "./dist/eclipse-scout-core.cjs.js",
+    "types": "./src/index.ts"
+  },
   "files": [
     "dist",
     "res",

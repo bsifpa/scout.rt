@@ -6,9 +6,13 @@
     "npm": ">=9.1.1",
     "pnpm": ">=7.16.0"
   },
+  "publishConfig": {
+    "main": "./target/dist/dev/${simpleArtifactName}-ui.js"
+  },
   "main": "./src/main/js/index.js",
   "files": [
-    "src/main/js"
+    "src/main/js",
+    "target/dist"
   ],
   "scripts": {
     "pnpm-install": "pnpm install --ignore-scripts",
