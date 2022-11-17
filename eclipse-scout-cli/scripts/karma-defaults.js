@@ -25,7 +25,16 @@ module.exports = (config, specEntryPoint) => {
   }
   let webpackConfigProvider = require(webpackConfigFilePath);
 
-  const webpackArgs = Object.assign({mode: scoutBuildConstants.mode.development}, config.webpackArgs);
+  const webpackArgs = Object.assign({
+    mode: scoutBuildConstants.mode.development,
+    tsOptions: {
+      compilerOptions: {
+        // No need to create declarations for tests
+        declaration: false,
+        declarationMap: false
+      }
+    }
+  }, config.webpackArgs);
   let webpackConfig = webpackConfigProvider(null, webpackArgs);
   if (Array.isArray(webpackConfig)) {
     webpackConfig = webpackConfig[0];

@@ -21,7 +21,7 @@
   ],
   "publishConfig": {
     "main": "./dist/eclipse-scout-chart.cjs.js",
-    "types": "./src/index.ts"
+    "types": "./dist/d.ts/index.d.ts"
   },
   "main": "./src/index.ts",
   "files": [

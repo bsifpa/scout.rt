@@ -10,7 +10,11 @@
     "strictBindCallApply": true,
     "noImplicitOverride": true,
     "useDefineForClassFields": true,
+    // Emitting is enabled by the webpack build, no need to emit anything during development
     "noEmit": true,
+    // Declarations are necessary for IDEs, even if TS source code is delivered (WEB-29638)
+    "declaration": true,
+    "declarationMap": true,
     // For jquery imports, see https://www.typescriptlang.org/tsconfig#allowSyntheticDefaultImports
     "allowSyntheticDefaultImports": true,
     "lib": [

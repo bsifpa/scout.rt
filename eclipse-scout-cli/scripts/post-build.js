@@ -13,6 +13,7 @@ const fs = require('fs');
 const path = require('path');
 const themeJsOutFilter = f => /.*theme.*\.js/.test(f);
 const listFiles = require('./list-files');
+const scoutBuild = require('./constants');
 
 function deleteFile(filename) {
   if (!fs.existsSync(filename)) {
@@ -31,14 +32,20 @@ function deleteFile(filename) {
   });
 }
 
+function fileListFilter(fileName) {
+  return fileName !== scoutBuild.fileListName
+    && !fileName.endsWith('.LICENSE')
+    && !themeJsOutFilter(fileName)
+    && !fileName.endsWith('d.ts')
+    && !fileName.endsWith('d.ts.map');
+}
+
 module.exports = {
   createFileList: dir => {
     const scoutBuild = require('./constants');
     let content = '';
     listFiles(dir)
-      .filter(fileName => fileName !== scoutBuild.fileListName)
-      .filter(fileName => !fileName.endsWith('.LICENSE'))
-      .filter(fileName => !themeJsOutFilter(fileName))
+      .filter(fileName => fileListFilter(fileName))
       .map(file => file.substring(dir.length + 1))
       .map(path => path.replace(/\\/g, '/'))
       .map(fileName => `${fileName}\n`)

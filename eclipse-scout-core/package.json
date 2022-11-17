@@ -22,7 +22,7 @@
   "main": "./src/index.ts",
   "publishConfig": {
     "main": "./dist/eclipse-scout-core.cjs.js",
-    "types": "./src/index.ts"
+    "types": "./dist/d.ts/src/index.d.ts"
   },
   "files": [
     "dist",

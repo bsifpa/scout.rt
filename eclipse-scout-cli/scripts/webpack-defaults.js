@@ -21,6 +21,7 @@ const {SourceMapDevToolPlugin, WatchIgnorePlugin, ProgressPlugin} = require('web
  * @param {boolean} args.progress true, to show build progress in percentage. Default is true.
  * @param {boolean} args.profile true, to show timing information for each build step. Default is false.
  * @param {[]} args.resDirArray an array containing directories which should be copied to dist/res
+ * @param {object} args.tsOptions a config object to be passed to the ts-loader
  */
 module.exports = (env, args) => {
   const buildMode = args.mode;
@@ -55,6 +56,14 @@ module.exports = (env, args) => {
         }
       }]
     ]
+  };
+
+  const tsOptions = {
+    ...args.tsOptions,
+    compilerOptions: {
+      noEmit: false,
+      ...args.tsOptions?.compilerOptions
+    }
   };
 
   const config = {
@@ -153,11 +162,7 @@ module.exports = (env, args) => {
           options: babelOptions
         }, {
           loader: require.resolve('ts-loader'),
-          options: {
-            compilerOptions: {
-              noEmit: false
-            }
-          }
+          options: tsOptions
         }]
       }, {
         test: /\.jsx?$/,
