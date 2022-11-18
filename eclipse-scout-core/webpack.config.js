@@ -10,17 +10,46 @@
  */
 
 const baseConfig = require('@eclipse-scout/cli/scripts/webpack-defaults');
+const path = require('path');
 module.exports = (env, args) => {
   args.resDirArray = ['res'];
   const config = baseConfig(env, args);
+
+  if (config.output.clean) {
+    // output.clean will (randomly) clean resources built by this build
+    // -> Delete the output folder "manually" and disable the clean plugin
+    const {deleteFolder} = require('@eclipse-scout/cli/scripts/files');
+    deleteFolder(config.output.path);
+    config.output.clean = false;
+  }
 
   let cjsConfig = {
     entry: {
       'eclipse-scout-core.cjs': './src/index.ts'
     },
-    // Clean is false because the second config will clean it
+    // Clean is false because the last config will clean it
     ...baseConfig.libraryConfig(config, {clean: false})
   };
+
+  let testingConfig = {
+    entry: {
+      'eclipse-scout-testing.cjs': './src/testing/index.ts'
+    },
+    ...baseConfig.libraryConfig(config, {clean: false, externalizeDevDeps: true})
+  };
+  testingConfig.externals = [
+    testingConfig.externals,
+    ({context, request, contextInfo}, callback) => {
+      // Externalize every import to the main index and replace it with @eclipse-scout/core
+      // Keep imports to the testing index
+      if (/\/index$/.test(request) && !path.resolve(context, request).includes('testing')) {
+        return callback(null, '@eclipse-scout/core');
+      }
+
+      // Continue without externalizing the import
+      callback();
+    }
+  ];
 
   // This build creates resources that can directly be included in a html file without needing a build stack (webpack, babel etc.).
   // The resources are available by a CDN that provides npm modules (e.g. https://www.jsdelivr.com/package/npm/@eclipse-scout/core)
@@ -45,5 +74,5 @@ module.exports = (env, args) => {
     }
   };
 
-  return [cjsConfig, globalConfig];
+  return [cjsConfig, testingConfig, globalConfig];
 };

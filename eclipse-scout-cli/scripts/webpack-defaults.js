@@ -249,12 +249,17 @@ module.exports = (env, args) => {
   return config;
 };
 
+/**
+ * @param {object} [options]
+ * @param {boolean} [options.clean] Instruct the AfterEmitWebpackPlugin to clean the output. Default is true.
+ * @param {boolean} [options.externalizeDevDeps] Add devDependencies as externals. Default is false.
+ */
 function libraryConfig(config, options = {}) {
   const packageJson = require(path.resolve('./package.json'));
-  let dependencies = Object.keys(packageJson.dependencies).reduce((obj, current) => {
-    obj[current] = current;
-    return obj;
-  }, {});
+  let dependencies = toExternals(packageJson.dependencies);
+  if (options.externalizeDevDeps ?? false) {
+    dependencies = Object.assign(dependencies, toExternals(packageJson.devDependencies));
+  }
 
   let plugins = config.plugins;
   if (options.clean ?? true) {
@@ -288,6 +293,17 @@ function libraryConfig(config, options = {}) {
     },
     plugins
   };
+}
+
+/**
+ * Creates a new object that contains the same keys as the given object. The values are replaced with the keys.
+ * So the resulting object looks like: {key1: key1, key2: key2}.
+ */
+function toExternals(object) {
+  return Object.keys(object).reduce((obj, current) => {
+    obj[current] = current;
+    return obj;
+  }, {});
 }
 
 /**

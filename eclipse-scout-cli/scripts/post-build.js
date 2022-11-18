@@ -12,7 +12,7 @@
 const fs = require('fs');
 const path = require('path');
 const themeJsOutFilter = f => /.*theme.*\.js/.test(f);
-const listFiles = require('./list-files');
+const {listFiles} = require('./files');
 const scoutBuild = require('./constants');
 
 function deleteFile(filename) {
