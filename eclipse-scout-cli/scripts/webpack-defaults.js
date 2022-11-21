@@ -226,22 +226,12 @@ module.exports = (env, args) => {
   }
 
   if (!devMode) {
-    const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
-    const TerserPlugin = require('terser-webpack-plugin');
+    const {ESBuildMinifyPlugin} = require('esbuild-loader');
     config.optimization.minimizer = [
-      // minify css
-      new CssMinimizerPlugin({
-        test: /\.min\.css$/g,
-        minimizerOptions: {
-          preset: ['default', {
-            discardComments: {removeAll: true}
-          }]
-        }
-      }),
-      // minify js
-      new TerserPlugin({
-        test: /\.js(\?.*)?$/i,
-        parallel: 4
+      new ESBuildMinifyPlugin({
+        target: 'es2016',
+        sourcemap: true,
+        css: true
       })
     ];
   }
