@@ -32,7 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Codec used to convert bewteen {@link IId} instances and their qualified/unqualified representation as {@link String}.
+ * Codec used to convert between {@link IId} instances and their qualified/unqualified representation as {@link String}.
  */
 @ApplicationScoped
 public class IdCodec {
