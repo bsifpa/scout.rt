@@ -6,10 +6,10 @@
     "npm": ">=9.1.1",
     "pnpm": ">=7.16.0"
   },
+  "main": "./src/main/js/index.js",
   "publishConfig": {
     "main": "./target/dist/dev/${simpleArtifactName}-ui.js"
   },
-  "main": "./src/main/js/index.js",
   "files": [
     "src/main/js",
     "target/dist"
